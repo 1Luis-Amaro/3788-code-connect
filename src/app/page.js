@@ -18,13 +18,10 @@ export default function Home({ searchParams }) {
   const currentPage = parseInt(searchParams?.page || 1);
   const searchTerm = searchParams?.q;
 
-  const {data: posts} = useQuery({
+  const {data: posts, isLoading, isFetching} = useQuery({
     queryKey: ["posts", currentPage], //definir a key, com isso ele genrencia o cash
     queryFn: () => fetchPosts({page: currentPage}) //lugar que o useQuery vai buscar os dados
   })
-
-  const isLoading = false;
-  const isFetching = false;
 
   const ratingsAndCartegoriesMap = null;
 
