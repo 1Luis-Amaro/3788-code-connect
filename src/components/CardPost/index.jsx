@@ -31,7 +31,7 @@ export const CardPost = ({ post, highlight, rating, category, isFetching }) => {
           </form>
           <div>
             <ModalComment />
-            <p>{post.comments.length}</p>
+            <p>{post.comments?.length || 0}</p>
           </div>
           {rating && (
             <div style={{ margin: "0 3px" }}>
