@@ -50,10 +50,24 @@ export default function Home({ searchParams }) {
     }))
     : [],
   })
-
-  console.log("postRatingQueries", postRatingQueries)
  
-  const ratingsAndCartegoriesMap = [] 
+ // Reduz um array de postRatingQueries para um objeto onde a chave é o ID do post
+const ratingsAndCartegoriesMap = postRatingQueries?.reduce((acc, query) => {
+  
+  // Verifica se a query não está pendente e se contém dados válidos com um ID
+  if (!query.isPending && query.data && query.data.id) {
+
+    // Adiciona os dados no acumulador, usando o ID como chave
+    // Ex: acc[1] = { id: 1, ... }
+    acc[query.data.id] = query.data;
+  }
+
+  // Retorna o acumulador para a próxima iteração
+  return acc;
+
+// Começa com um objeto vazio como acumulador
+}, {});
+
 
   return (
     <main className={styles.grid}>
