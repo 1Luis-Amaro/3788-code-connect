@@ -13,6 +13,8 @@ export const useFetchReplices = ({commentId, slug}) => {
     return useQuery({
         queryKey: ['replices', commentId],
         queryFn: async () => fetchReplices({commentId, slug}),
-        enabled: !!commentId && !!slug
+        enabled: !!commentId && !!slug,
+        retry: 5,
+        retryDelay: 100,
     })
 }
