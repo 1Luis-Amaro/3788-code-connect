@@ -3,6 +3,7 @@ import { Aside } from "@/components/Aside";
 import "./globals.css";
 import { SearchForm } from "@/components/SearchForm";
 import { ReactQueryProvider } from "./ReactQueryProvider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 
 export const metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
             <SearchForm />
             {children}
           </div>
+          <ReactQueryDevtools initialIsOpen={false} position="bottom" />
         </div>
       </body>
       </ReactQueryProvider>
