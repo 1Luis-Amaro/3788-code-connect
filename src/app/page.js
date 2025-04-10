@@ -20,7 +20,9 @@ export default function Home({ searchParams }) {
 
   const {data: posts, isLoading, isFetching} = useQuery({
     queryKey: ["posts", currentPage], //definir a key, com isso ele genrencia o cash
-    queryFn: () => fetchPosts({page: currentPage}) //lugar que o useQuery vai buscar os dados
+    queryFn: () => fetchPosts({page: currentPage}), //lugar que o useQuery vai buscar os dados
+    //staleTime: 6000,//esse dado vai demorar 15 segundos pra se tornar obsoleto, quando eu trocar de pagina ele vai usar do cash e não de uma requisição
+    //gcTime:2000, aqui ja coloco um tempo para ele excluir o dado
   })
 
   const ratingsAndCartegoriesMap = null;
