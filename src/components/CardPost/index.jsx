@@ -19,11 +19,21 @@ export const CardPost = ({ post, highlight, rating, category, isFetching, curren
         method: "POST", // Tipo da requisição
         headers: { "Content-Type": "application/json" }, // Informa que o corpo da requisição é JSON
         body: JSON.stringify(postData), // Converte os dados para JSON
-      });
+      }).then((response) => {
+        if(!response.ok) {
+          throw new Error(`HTTP error! status ${response.status}`)
+        }
+        return response.json()
+      }
+      )
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["post", post.slug])
       queryClient.invalidateQueries(["posts", currentPage])
+    },
+
+    onError: (error, variables) => {
+      console.log(`Erro ao salvar o thumbsUp para o slug: ${variables.slug} `, {error})
     }
   });
   
@@ -50,6 +60,11 @@ export const CardPost = ({ post, highlight, rating, category, isFetching, curren
               thumbsMutation.mutate({slug: post.slug})
           } } >
             <ThumbsUpButton disable={isFetching} />
+            {thumbsMutation.isError && (
+              <p className={styles.ThumbsUpButtonMessage} >
+                Oops, ocorreu um erro ao salvar thumbsUp.
+              </p>
+            )}
             <p>{post.likes}</p>
           </form>
           <div>
