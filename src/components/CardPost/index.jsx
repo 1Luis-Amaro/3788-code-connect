@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient} from "@tanstack/react-query";
 import Image from "next/image";
 import { Avatar } from "../Avatar";
 import { Star } from "../icons/Star";
@@ -45,18 +45,28 @@ export const CardPost = ({
   });
 
   const submitCommentMutation = useMutation({
+
     mutationFn: (commentData) => {
       return fetch(`http://localhost:3000/api/comment/${post.id}`, {
         method:"POST",
         headers: { "Content-Type": "application/json" }, // Informa que o corpo da requisição é JSON
         body: JSON.stringify(commentData)
       })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["post", post.slug])
+      queryClient.invalidateQueries(["post", post.currentPage])
+    },
+    onError: (error, variables) => {
+      console.log(`Erro ao salvar o comentário para o slug: ${variables.slug} `, {
+        error,
+      });
     }
+
   })
 
   const onSubmitComment = (e) => {
-   
-
+    
     e.preventDefault()
 
     const formData = new FormData(e.target) //aqui pego os dados do formulario, e tenho acesso ao dado que quero com o e.target
@@ -64,7 +74,7 @@ export const CardPost = ({
 
     submitCommentMutation.mutate({id: post.id, text})  //para perfomar a mutação
     
-   
+    
   }
   
   return (
