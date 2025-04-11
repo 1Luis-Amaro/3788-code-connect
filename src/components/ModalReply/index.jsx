@@ -6,6 +6,7 @@ import styles from "./replymodal.module.css";
 import { Textarea } from "../Textarea";
 import { SubmitButton } from "../SubmitButton";
 import { Comment } from "../Comment";
+import {useMutation} from '@tanstack/react-query'
 
 export const ReplyModal = ({ comment, post }) => {
   const modalRef = useRef(null);
@@ -14,10 +15,30 @@ export const ReplyModal = ({ comment, post }) => {
     modalRef.current.openModal();
   };
 
+  const replyMutation = useMutation ({
+    mutationFn: (commentData) => {
+      return fetch(`http://localhost:3000/api/comment/${comment.id}/replies`,
+      {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(commentData)
+      })
+    }
+  })
+
+  const onSubmitCommentReply = (e) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target)
+    const text = formData.get("text")
+
+    replyMutation.mutate({comment, text})
+  }
+
   return (
     <>
       <Modal ref={modalRef}>
-        <form>
+        <form onSubmit={onSubmitCommentReply} >
           <div className={styles.body}>
             <Comment comment={comment} />
           </div>
