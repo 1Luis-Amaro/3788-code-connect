@@ -83,6 +83,7 @@ const ratingsAndCartegoriesMap = postRatingQueries?.reduce((acc, query) => {
           rating={ratingsAndCartegoriesMap?.[post.id]?.rating}
           category={ratingsAndCartegoriesMap?.[post.id]?.category}
           isFetching={isFetching}
+          currentPage={currentPage}
         />
       ))}
       <div className={styles.links}>

@@ -1,4 +1,4 @@
-import {useMutation} from "@tanstack/react-query"
+import {useMutation, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image";
 import { Avatar } from "../Avatar";
 import { Star } from "../icons/Star";
@@ -7,7 +7,9 @@ import Link from "next/link";
 import { ThumbsUpButton } from "./ThumbsUpButton";
 import { ModalComment } from "../ModalComment";
 
-export const CardPost = ({ post, highlight, rating, category, isFetching }) => {
+export const CardPost = ({ post, highlight, rating, category, isFetching, currentPage }) => {
+
+  const queryClient = useQueryClient()
 
   const thumbsMutation = useMutation({
     // Define a função que será executada quando a mutation for chamada
@@ -19,6 +21,10 @@ export const CardPost = ({ post, highlight, rating, category, isFetching }) => {
         body: JSON.stringify(postData), // Converte os dados para JSON
       });
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["post", post.slug])
+      queryClient.invalidateQueries(["posts", currentPage])
+    }
   });
   
   return (
