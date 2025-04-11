@@ -1,4 +1,4 @@
-import {useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { Avatar } from "../Avatar";
 import { Star } from "../icons/Star";
@@ -7,9 +7,15 @@ import Link from "next/link";
 import { ThumbsUpButton } from "./ThumbsUpButton";
 import { ModalComment } from "../ModalComment";
 
-export const CardPost = ({ post, highlight, rating, category, isFetching, currentPage }) => {
-
-  const queryClient = useQueryClient()
+export const CardPost = ({
+  post,
+  highlight,
+  rating,
+  category,
+  isFetching,
+  currentPage,
+}) => {
+  const queryClient = useQueryClient();
 
   const thumbsMutation = useMutation({
     // Define a função que será executada quando a mutation for chamada
@@ -20,22 +26,46 @@ export const CardPost = ({ post, highlight, rating, category, isFetching, curren
         headers: { "Content-Type": "application/json" }, // Informa que o corpo da requisição é JSON
         body: JSON.stringify(postData), // Converte os dados para JSON
       }).then((response) => {
-        if(!response.ok) {
-          throw new Error(`HTTP error! status ${response.status}`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status ${response.status}`);
         }
-        return response.json()
-      }
-      )
+        return response.json();
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["post", post.slug])
-      queryClient.invalidateQueries(["posts", currentPage])
+      queryClient.invalidateQueries(["post", post.slug]);
+      queryClient.invalidateQueries(["posts", currentPage]);
     },
 
     onError: (error, variables) => {
-      console.log(`Erro ao salvar o thumbsUp para o slug: ${variables.slug} `, {error})
-    }
+      console.log(`Erro ao salvar o thumbsUp para o slug: ${variables.slug} `, {
+        error,
+      });
+    },
   });
+
+  const submitCommentMutation = useMutation({
+    mutationFn: (commentData) => {
+      return fetch(`http://localhost:3000/api/comment/${post.id}`, {
+        method:"POST",
+        headers: { "Content-Type": "application/json" }, // Informa que o corpo da requisição é JSON
+        body: JSON.stringify(commentData)
+      })
+    }
+  })
+
+  const onSubmitComment = (e) => {
+   
+
+    e.preventDefault()
+
+    const formData = new FormData(e.target) //aqui pego os dados do formulario, e tenho acesso ao dado que quero com o e.target
+    const text = formData.get("text") //extraio do formulario até realmente ter o texto
+
+    submitCommentMutation.mutate({id: post.id, text})  //para perfomar a mutação
+    
+   
+  }
   
   return (
     <article className={styles.card} style={{ width: highlight ? 993 : 486 }}>
@@ -55,20 +85,22 @@ export const CardPost = ({ post, highlight, rating, category, isFetching, curren
       </section>
       <footer className={styles.footer}>
         <div className={styles.actions}>
-          <form onClick={(e) => {
+          <form
+            onClick={(e) => {
               e.preventDefault();
-              thumbsMutation.mutate({slug: post.slug})
-          } } >
+              thumbsMutation.mutate({ slug: post.slug });
+            }}
+          >
             <ThumbsUpButton disable={isFetching} />
             {thumbsMutation.isError && (
-              <p className={styles.ThumbsUpButtonMessage} >
+              <p className={styles.ThumbsUpButtonMessage}>
                 Oops, ocorreu um erro ao salvar thumbsUp.
               </p>
             )}
             <p>{post.likes}</p>
           </form>
           <div>
-            <ModalComment />
+            <ModalComment onSubmit={onSubmitComment} />
             <p>{post.comments?.length || 0}</p>
           </div>
           {rating && (
