@@ -6,6 +6,8 @@ import styles from "./cardpost.module.css";
 import Link from "next/link";
 import { ThumbsUpButton } from "./ThumbsUpButton";
 import { ModalComment } from "../ModalComment";
+import { useEffect } from "react";
+
 
 export const CardPost = ({
   post,
@@ -32,17 +34,19 @@ export const CardPost = ({
         return response.json();
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["post", post.slug]);
-      queryClient.invalidateQueries(["posts", currentPage]);
-    },
-
     onError: (error, variables) => {
       console.log(`Erro ao salvar o thumbsUp para o slug: ${variables.slug} `, {
         error,
       });
     },
   });
+
+  //atualização otimista via UI
+  useEffect(()=> {
+    if(thumbsMutation.isPending && thumbsMutation.variables) {
+      post.likes = post.likes + 1;
+    } 
+  }, [thumbsMutation.isPending, thumbsMutation.variables])
 
   const submitCommentMutation = useMutation({
 
