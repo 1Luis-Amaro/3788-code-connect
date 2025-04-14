@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "../Modal";
 import styles from "./replymodal.module.css";
 import { Textarea } from "../Textarea";
@@ -13,7 +13,10 @@ export const ReplyModal = ({ comment, slug }) => {
   
   const queryClient = useQueryClient()
 
+  const [comentario, setComentario] = useState(" ") 
+
   const openModal = () => {
+    setComentario("");
     modalRef.current.openModal();
   };
 
@@ -68,6 +71,8 @@ export const ReplyModal = ({ comment, slug }) => {
             rows={8}
             name="text"
             placeholder="Digite aqui..."
+            value = { comentario}
+            onChange={(e) => setComentario(e.target.value)}
           />
           <div className={styles.footer}>
             <SubmitButton>Responder</SubmitButton>
