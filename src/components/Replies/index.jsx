@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./replies.module.css";
 import { Comment } from "../Comment";
 import { ReplyModal } from "../ModalReply";
-import { fetchReplices, useFetchReplices } from "@/hooks/useFetchReplies";
+import { fetchReplices, useFetchReplices } from "@/app/hooks/useFetchReplies";
 import { useQueryClient } from "@tanstack/react-query";
 
 
