@@ -6,7 +6,6 @@ import styles from "./cardpost.module.css";
 import Link from "next/link";
 import { ThumbsUpButton } from "./ThumbsUpButton";
 import { ModalComment } from "../ModalComment";
-import { useEffect } from "react";
 
 
 export const CardPost = ({
@@ -34,6 +33,24 @@ export const CardPost = ({
         return response.json();
       });
     },
+    onMutate: async(newData) => { //antes da mutação faço algo
+      const postQueryKey = ["post", post.slug] //usso pra saber a chave da query Exemplo: se o post tem slug "meu-primeiro-post
+
+      //cancelar queries que estão acontecendo naquele momento, para o detalhe do post para evitar conflioto
+      await queryClient.cancelQueries(postQueryKey)
+
+      const prevPost = queryClient.getQueryData(postQueryKey) //pega o post atual que está em cache 
+
+      //atualizar um único post 
+      if(prevPost) { //verifico se tem um post armazenado no chache
+        queryClient.setQueryData(postQueryKey, { //atualiza os dados no cache do React Query.
+          ...prevPost, //pego os dados antigos do post 
+          likes: prevPost.likes + 1, //e adiciono mais 1 like 
+        })
+      }
+      return {prevPost}
+    }, 
+
     onError: (error, variables) => {
       console.log(`Erro ao salvar o thumbsUp para o slug: ${variables.slug} `, {
         error,
@@ -42,11 +59,11 @@ export const CardPost = ({
   });
 
   //atualização otimista via UI
-  useEffect(()=> {
-    if(thumbsMutation.isPending && thumbsMutation.variables) {
-      post.likes = post.likes + 1;
-    } 
-  }, [thumbsMutation.isPending, thumbsMutation.variables])
+  // useEffect(()=> {
+  //   if(thumbsMutation.isPending && thumbsMutation.variables) {
+  //     post.likes = post.likes + 1;
+  //   } 
+  // }, [thumbsMutation.isPending, thumbsMutation.variables])
 
   const submitCommentMutation = useMutation({
 
