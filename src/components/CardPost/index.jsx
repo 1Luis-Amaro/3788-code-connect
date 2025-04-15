@@ -33,7 +33,7 @@ export const CardPost = ({
         return response.json();
       });
     },
-    onMutate: async(newData) => { //antes da mutação faço algo
+    onMutate: async() => { //antes da mutação faço algo
       const postQueryKey = ["post", post.slug] //usso pra saber a chave da query Exemplo: se o post tem slug "meu-primeiro-post
 
       //cancelar queries que estão acontecendo naquele momento, para o detalhe do post para evitar conflioto
@@ -50,11 +50,20 @@ export const CardPost = ({
       }
       return {prevPost}
     }, 
+    onSuccess: () =>  {
+      if(currentPage) {
+        queryClient.invalidateQueries(["posts", currentPage])
+      }
+    },
 
-    onError: (error, variables) => {
+    onError: (error, variables, context) => {
       console.log(`Erro ao salvar o thumbsUp para o slug: ${variables.slug} `, {
         error,
       });
+
+      if (context.prevPost) {
+        queryClient.setQueriesData(["post", post.slug], context.prevPost)
+      }
     },
   });
 
